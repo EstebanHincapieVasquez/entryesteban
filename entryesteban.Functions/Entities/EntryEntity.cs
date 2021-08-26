@@ -9,7 +9,7 @@ namespace entryesteban.Functions.Entities
     {
         public int IDEmpleado { get; set; }
         public DateTime DateTime { get; set; }
-        public Boolean Type { get; set; }
+        public int Type { get; set; }
         public bool Consolidado { get; set; }
 
     }
