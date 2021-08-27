@@ -1,4 +1,5 @@
 ﻿using entryesteban.Common.Models;
+using entryesteban.Functions.Entities;
 using entryesteban.Functions.Functions;
 using entryesteban.Test.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -49,6 +50,59 @@ namespace entryesteban.Test.Test
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
 
+        [Fact]
+        public async void DeleteEntry_Should_Return_200()
+        {
+            // Arrenge
+            MockCloudTableEntrys mockEntrys = new MockCloudTableEntrys(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
+            Entry entryRequest = TestFactory.GetEntryRequest();
+            EntryEntity entryEntity = TestFactory.GetEntryEntity();
+            Guid entryId = Guid.NewGuid();
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(entryId, entryRequest);
+
+            // Act
+            IActionResult response = await EntryApi.DeleteEntry(request, entryEntity, mockEntrys, entryId.ToString(), logger);
+
+            // Assert
+            OkObjectResult result = (OkObjectResult)response;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        /*
+        [Fact]
+        public async void GetAllEntry_Should_Return_200()
+        {
+            // Arrenge
+            MockCloudTableEntrys mockEntrys = new MockCloudTableEntrys(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
+            Entry entryRequest = TestFactory.GetEntryRequest();
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(entryRequest);
+
+            // Act
+            IActionResult response = await EntryApi.GetAllEntry(request, mockEntrys, logger);
+
+            // Assert
+            OkObjectResult result = (OkObjectResult)response;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        [Fact]
+        public async void GetAllEntry_Should_Return_200()
+        {
+            // Arrenge
+            MockCloudTableEntrys mockEntrys = new MockCloudTableEntrys(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
+            Entry entryRequest = TestFactory.GetEntryRequest();
+            EntryEntity entryEntity = TestFactory.GetEntryEntity();
+            Guid entryId = Guid.NewGuid();
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(entryId, entryRequest);
+
+            // Act
+            IActionResult response = await EntryApi.GetEntryById(request, entryEntity, entryId.ToString(), logger);
+
+            // Assert
+            OkObjectResult result = (OkObjectResult)response;
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+        }
+        */
 
     }
 }
