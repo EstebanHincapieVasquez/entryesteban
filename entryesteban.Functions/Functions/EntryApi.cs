@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using entryesteban.Common.Models;
 using entryesteban.Common.Responses;
 using entryesteban.Functions.Entities;
+using System.Globalization;
 
 namespace entryesteban.Functions.Functions
 {
@@ -27,24 +28,24 @@ namespace entryesteban.Functions.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Entry entry = JsonConvert.DeserializeObject<Entry>(requestBody);
 
-            if (string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || string.IsNullOrEmpty(entry?.Type.ToString()) || entry?.IDEmpleado <= 0 || entry?.Type < 0 || entry?.Type > 1 || entry?.Type == null)
+            if (string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || string.IsNullOrEmpty(entry?.Type.ToString()) || string.IsNullOrEmpty(entry?.DateTime.ToString()))
             {
                 return new BadRequestObjectResult(new Response
                 {
                     IsSuccess = false,
-                    Message = "The request must have a IDEmpleado and the Type must be: 0 = Entry or 1 = Exit."
+                    Message = "The request must have a IDEmpleado, a DateTime and the Type must be: 0 = Entry or 1 = Exit."
                 });
             }
 
             EntryEntity entryEntity = new EntryEntity
             {
-                DateTime = DateTime.UtcNow,
                 ETag = "*",
-                Consolidado = false,
-                PartitionKey = "ENTRY",
+                PartitionKey = "TIME",
                 RowKey = Guid.NewGuid().ToString(),
                 IDEmpleado = entry.IDEmpleado,
-                Type = entry.Type
+                DateTime = Convert.ToDateTime(entry.DateTime),
+                Type = entry.Type,
+                Consolidado = false
             };
 
             TableOperation addOperation = TableOperation.Insert(entryEntity);
@@ -74,7 +75,7 @@ namespace entryesteban.Functions.Functions
             Entry entry = JsonConvert.DeserializeObject<Entry>(requestBody);
 
             // Validate entry id
-            TableOperation findOperation = TableOperation.Retrieve<EntryEntity>("ENTRY", id);
+            TableOperation findOperation = TableOperation.Retrieve<EntryEntity>("TIME", id);
             TableResult findResult = await entryTable.ExecuteAsync(findOperation);
             if (findResult.Result == null)
             {
@@ -88,9 +89,10 @@ namespace entryesteban.Functions.Functions
             // Update entry
             EntryEntity entryEntity = (EntryEntity)findResult.Result;
 
-            if (!string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || !string.IsNullOrEmpty(entry?.Type.ToString()) || !(entry?.IDEmpleado <= 0) || !(entry?.Type < 0) || !(entry?.Type > 1) || !(entry?.Type == null))
+            if (!string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || !string.IsNullOrEmpty(entry?.Type.ToString()) || !string.IsNullOrEmpty(entry?.DateTime.ToString()))
             {
                 entryEntity.IDEmpleado = entry.IDEmpleado;
+                entryEntity.DateTime = entry.DateTime;
                 entryEntity.Type = entry.Type;
             }
             
@@ -133,7 +135,7 @@ namespace entryesteban.Functions.Functions
         [FunctionName(nameof(GetEntryById))]
         public static IActionResult GetEntryById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry/{id}")] HttpRequest req,
-            [Table("entry", "ENTRY", "{id}", Connection = "AzureWebJobsStorage")] EntryEntity entryEntity,
+            [Table("entry", "TIME", "{id}", Connection = "AzureWebJobsStorage")] EntryEntity entryEntity,
             string id,
             ILogger log)
         {
@@ -162,7 +164,7 @@ namespace entryesteban.Functions.Functions
         [FunctionName(nameof(DeleteEntry))]
         public static async Task<IActionResult> DeleteEntry(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "entry/{id}")] HttpRequest req,
-            [Table("entry", "ENTRY", "{id}", Connection = "AzureWebJobsStorage")] EntryEntity entryEntity,
+            [Table("entry", "TIME", "{id}", Connection = "AzureWebJobsStorage")] EntryEntity entryEntity,
             [Table("entry", Connection = "AzureWebJobsStorage")] CloudTable entryTable,
             string id,
             ILogger log)

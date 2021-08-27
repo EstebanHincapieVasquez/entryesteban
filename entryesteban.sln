@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entryesteban.Common", "entryesteban.Common\entryesteban.Common.csproj", "{D723F0AE-9928-4392-A3F2-B6B2B92C7182}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entryesteban.Common", "entryesteban.Common\entryesteban.Common.csproj", "{D723F0AE-9928-4392-A3F2-B6B2B92C7182}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entryesteban.Functions", "entryesteban.Functions\entryesteban.Functions.csproj", "{16E3AC9E-4411-4B39-B1F1-3529D9ABC3B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entryesteban.Functions", "entryesteban.Functions\entryesteban.Functions.csproj", "{16E3AC9E-4411-4B39-B1F1-3529D9ABC3B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entryesteban.Test", "entryesteban.Test\entryesteban.Test.csproj", "{4F3014EF-0F39-491B-A665-AF36A1C94A83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entryesteban.Test", "entryesteban.Test\entryesteban.Test.csproj", "{4F3014EF-0F39-491B-A665-AF36A1C94A83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
