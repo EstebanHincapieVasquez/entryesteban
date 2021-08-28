@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace entryesteban.Test.Test
@@ -84,9 +82,10 @@ namespace entryesteban.Test.Test
             OkObjectResult result = (OkObjectResult)response;
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
+        */
 
         [Fact]
-        public async void GetAllEntry_Should_Return_200()
+        public async void GetEntryById_Should_Return_200()
         {
             // Arrenge
             MockCloudTableEntrys mockEntrys = new MockCloudTableEntrys(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
@@ -96,13 +95,12 @@ namespace entryesteban.Test.Test
             DefaultHttpRequest request = TestFactory.CreateHttpRequest(entryId, entryRequest);
 
             // Act
-            IActionResult response = await EntryApi.GetEntryById(request, entryEntity, entryId.ToString(), logger);
+            IActionResult response = EntryApi.GetEntryById(request, entryEntity, entryId.ToString(), logger);
 
             // Assert
             OkObjectResult result = (OkObjectResult)response;
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
-        */
 
     }
 }
