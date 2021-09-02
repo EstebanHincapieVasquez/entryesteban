@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace entryesteban.Common.Models
 {
-    public class Entry
+    public class Consolidated
     {
         public int IDEmployee { get; set; }
         public DateTime DateTime { get; set; }
-        public int Type { get; set; }  
-        public bool Consolidate { get; set; }
+        public int MinutesWork { get; set; }
     }
 }

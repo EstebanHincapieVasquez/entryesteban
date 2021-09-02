@@ -21,10 +21,10 @@ namespace entryesteban.Test.Helpers
                 ETag = "*",
                 PartitionKey = "TIME",
                 RowKey = Guid.NewGuid().ToString(),
-                IDEmpleado = 1,
+                IDEmployee = 1,
                 DateTime = DateTime.UtcNow,
                 Type = 0,
-                Consolidado = false
+                Consolidate = false
             };
         }
 
@@ -68,10 +68,10 @@ namespace entryesteban.Test.Helpers
         {
             return new Entry
             {
-                IDEmpleado = 1,
+                IDEmployee = 1,
                 DateTime = DateTime.UtcNow,
                 Type = 0,
-                Consolidado = false,
+                Consolidate = false,
             };
         }
 

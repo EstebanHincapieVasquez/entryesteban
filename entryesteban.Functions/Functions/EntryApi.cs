@@ -28,7 +28,7 @@ namespace entryesteban.Functions.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Entry entry = JsonConvert.DeserializeObject<Entry>(requestBody);
 
-            if (string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || string.IsNullOrEmpty(entry?.Type.ToString()) || string.IsNullOrEmpty(entry?.DateTime.ToString()))
+            if (string.IsNullOrEmpty(entry?.IDEmployee.ToString()) || string.IsNullOrEmpty(entry?.Type.ToString()) || string.IsNullOrEmpty(entry?.DateTime.ToString()))
             {
                 return new BadRequestObjectResult(new Response
                 {
@@ -42,10 +42,10 @@ namespace entryesteban.Functions.Functions
                 ETag = "*",
                 PartitionKey = "TIME",
                 RowKey = Guid.NewGuid().ToString(),
-                IDEmpleado = entry.IDEmpleado,
+                IDEmployee = entry.IDEmployee,
                 DateTime = Convert.ToDateTime(entry.DateTime),
                 Type = entry.Type,
-                Consolidado = false
+                Consolidate = false
             };
 
             TableOperation addOperation = TableOperation.Insert(entryEntity);
@@ -89,9 +89,9 @@ namespace entryesteban.Functions.Functions
             // Update entry
             EntryEntity entryEntity = (EntryEntity)findResult.Result;
 
-            if (!string.IsNullOrEmpty(entry?.IDEmpleado.ToString()) || !string.IsNullOrEmpty(entry?.Type.ToString()) || !string.IsNullOrEmpty(entry?.DateTime.ToString()))
+            if (!string.IsNullOrEmpty(entry?.IDEmployee.ToString()) || !string.IsNullOrEmpty(entry?.Type.ToString()) || !string.IsNullOrEmpty(entry?.DateTime.ToString()))
             {
-                entryEntity.IDEmpleado = entry.IDEmpleado;
+                entryEntity.IDEmployee = entry.IDEmployee;
                 entryEntity.DateTime = entry.DateTime;
                 entryEntity.Type = entry.Type;
             }

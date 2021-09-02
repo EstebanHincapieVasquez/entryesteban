@@ -5,12 +5,10 @@ using System.Text;
 
 namespace entryesteban.Functions.Entities
 {
-    public class EntryEntity : TableEntity
+    public class ConsolidatedEntity : TableEntity
     {
         public int IDEmployee { get; set; }
         public DateTime DateTime { get; set; }
-        public int Type { get; set; }
-        public bool Consolidate { get; set; }
-
+        public int MinutesWork { get; set; }
     }
 }
