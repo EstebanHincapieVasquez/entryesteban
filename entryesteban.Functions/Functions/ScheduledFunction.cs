@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace entryesteban.Functions.Functions
 {
-    public static class SheduledFunction
+    public static class ScheduledFunction
     {
-        [FunctionName("SheduledFunction")]
+        [FunctionName("ScheduledFunction")]
         public static async Task Run(
             [TimerTrigger("0 */2 * * * *")] TimerInfo myTimer,
             [Table("entry", Connection = "AzureWebJobsStorage")] CloudTable entryTable,

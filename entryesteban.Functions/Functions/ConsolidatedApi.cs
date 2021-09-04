@@ -51,7 +51,7 @@ namespace entryesteban.Functions.Functions
                         PartitionKey = "CONSOLIDATED",
                         RowKey = Guid.NewGuid().ToString(),
                         IDEmployee = ListEntryEntity[i].IDEmployee,
-                        DateTime = DateTime.Now,
+                        DateTime = ListEntryEntity[i-1].DateTime,
                         MinutesWork = (int)(ListEntryEntity[i].DateTime - ListEntryEntity[i - 1].DateTime).TotalMinutes,
                     };
 

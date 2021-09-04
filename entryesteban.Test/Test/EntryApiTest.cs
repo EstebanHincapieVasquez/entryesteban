@@ -65,8 +65,7 @@ namespace entryesteban.Test.Test
             OkObjectResult result = (OkObjectResult)response;
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
-
-        /*
+        
         [Fact]
         public async void GetAllEntry_Should_Return_200()
         {
@@ -82,7 +81,6 @@ namespace entryesteban.Test.Test
             OkObjectResult result = (OkObjectResult)response;
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
-        */
 
         [Fact]
         public async void GetEntryById_Should_Return_200()
@@ -101,26 +99,6 @@ namespace entryesteban.Test.Test
             OkObjectResult result = (OkObjectResult)response;
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
-
-        /*
-        [Fact]
-        public async void CreateConsolidate_Should_Return_200()
-        {
-            // Arrenge
-            MockCloudTableEntrys mockEntrys = new MockCloudTableEntrys(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
-            MockCloudTableConsolidates mockConsolidates = new MockCloudTableConsolidates(new Uri("http://127.0.0.1.10002/devstoreaccount1/reports"));
-
-            Consolidated consolidatedRequest = TestFactory.GetConsolidatedRequest();
-            DefaultHttpRequest request = TestFactory.CreateHttpRequestConsolidated(consolidatedRequest);
-
-            // Act
-            IActionResult response = await ConsolidatedApi.ConsolidatedProcess(request, mockConsolidates, mockEntrys, logger);
-
-            // Assert
-            OkObjectResult result = (OkObjectResult)response;
-            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
-        }
-        */
 
     }
 }

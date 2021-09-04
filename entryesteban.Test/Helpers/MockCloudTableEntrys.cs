@@ -33,7 +33,7 @@ namespace entryesteban.Test.Helpers
                 Result = TestFactory.GetEntryEntity()
             });
         }
-        /*
+        
         public override async Task<TableQuerySegment<EntryEntity>>
             ExecuteQuerySegmentedAsync<EntryEntity>(TableQuery<EntryEntity> query, TableContinuationToken token)
         {
@@ -43,7 +43,5 @@ namespace entryesteban.Test.Helpers
 
             return await Task.FromResult(constructor.Invoke(new object[] { TestFactory.GetEntryEntity() }) as TableQuerySegment<EntryEntity>);
         }
-        */
-
     }
 }
