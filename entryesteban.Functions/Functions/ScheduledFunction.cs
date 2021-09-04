@@ -15,7 +15,7 @@ namespace entryesteban.Functions.Functions
     {
         [FunctionName("ScheduledFunction")]
         public static async Task Run(
-            [TimerTrigger("0 */2 * * * *")] TimerInfo myTimer,
+            [TimerTrigger("0 */1 * * * *")] TimerInfo myTimer,
             [Table("entry", Connection = "AzureWebJobsStorage")] CloudTable entryTable,
             [Table("consolidated", Connection = "AzureWebJobsStorage")] CloudTable consolidatedTable,
             ILogger log)
