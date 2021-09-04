@@ -1,8 +1,11 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using entryesteban.Functions.Entities;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,5 +33,17 @@ namespace entryesteban.Test.Helpers
                 Result = TestFactory.GetEntryEntity()
             });
         }
+        /*
+        public override async Task<TableQuerySegment<EntryEntity>>
+            ExecuteQuerySegmentedAsync<EntryEntity>(TableQuery<EntryEntity> query, TableContinuationToken token)
+        {
+            ConstructorInfo constructor = typeof(TableQuerySegment<EntryEntity>)
+                   .GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)
+                   .FirstOrDefault(c => c.GetParameters().Count() == 1);
+
+            return await Task.FromResult(constructor.Invoke(new object[] { TestFactory.GetEntryEntity() }) as TableQuerySegment<EntryEntity>);
+        }
+        */
+
     }
 }

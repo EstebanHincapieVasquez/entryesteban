@@ -100,5 +100,64 @@ namespace entryesteban.Test.Helpers
             return logger;
         }
 
+        public static ConsolidatedEntity GetConsolidatedEntity()
+        {
+            return new ConsolidatedEntity
+            {
+                ETag = "*",
+                PartitionKey = "CONSOLIDATED",
+                RowKey = Guid.NewGuid().ToString(),
+                IDEmployee = 1,
+                DateTime = DateTime.Now,
+                MinutesWork = 540,
+            };
+        }
+
+        public static Consolidated GetConsolidatedRequest()
+        {
+            return new Consolidated
+            {
+                IDEmployee = 1,
+                DateTime = DateTime.UtcNow,
+                MinutesWork = 540,
+            };
+        }
+
+        //Update element
+        public static DefaultHttpRequest CreateHttpRequestConsolidated(Guid consolidatedId, Consolidated ConsolidatedRequest)
+        {
+            string request = JsonConvert.SerializeObject(ConsolidatedRequest);
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Body = GenerateStreamFromString(request),
+                Path = $"/{consolidatedId}"
+            };
+        }
+
+        //Get by Id or Delet by Id
+        public static DefaultHttpRequest CreateHttpRequestConsolidated(Guid consolidatedId)
+        {
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Path = $"/{consolidatedId}"
+            };
+        }
+
+        //Create (add new record)
+        public static DefaultHttpRequest CreateHttpRequestConsolidated(Consolidated consolidatedRequest)
+        {
+            string request = JsonConvert.SerializeObject(consolidatedRequest);
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Body = GenerateStreamFromString(request)
+            };
+        }
+
+        //Get all (return all items)
+        public static DefaultHttpRequest CreateHttpRequestConsolidated()
+        {
+            return new DefaultHttpRequest(new DefaultHttpContext());
+        }
+
     }
 }

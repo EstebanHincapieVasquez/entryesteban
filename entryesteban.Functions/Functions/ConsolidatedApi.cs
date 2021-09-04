@@ -1,18 +1,15 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using entryesteban.Common.Responses;
+using entryesteban.Functions.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Microsoft.WindowsAzure.Storage.Table;
-using entryesteban.Functions.Entities;
-using entryesteban.Common.Models;
-using entryesteban.Common.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace entryesteban.Functions.Functions
 {
@@ -44,9 +41,9 @@ namespace entryesteban.Functions.Functions
 
             int contNew = 0;
             int contUpdate = 0;
-            for (int i=0; i < ListEntryEntity.Count; i++)
+            for (int i = 0; i < ListEntryEntity.Count; i++)
             {
-                if(ListEntryEntity[i].Type == 1)
+                if (ListEntryEntity[i].Type == 1)
                 {
                     consolidatedEntity = new ConsolidatedEntity
                     {
@@ -55,39 +52,38 @@ namespace entryesteban.Functions.Functions
                         RowKey = Guid.NewGuid().ToString(),
                         IDEmployee = ListEntryEntity[i].IDEmployee,
                         DateTime = DateTime.Now,
-                        MinutesWork = (int)(ListEntryEntity[i].DateTime - ListEntryEntity[i-1].DateTime).TotalMinutes,
+                        MinutesWork = (int)(ListEntryEntity[i].DateTime - ListEntryEntity[i - 1].DateTime).TotalMinutes,
                     };
 
                     //Query to table consolidate for see if already exist the employee
-                    TableOperation findEmployeeInConsolidateTable = TableOperation.Retrieve<ConsolidatedEntity>("CONSOLIDATED", Convert.ToString(consolidatedEntity.IDEmployee));
-                    TableResult findResultEmployeeConsolidate = await consolidatedTable.ExecuteAsync(findEmployeeInConsolidateTable);
-                    if (findResultEmployeeConsolidate.Result == null)
+                    string findEmployeeInConsolidateTable = TableQuery.CombineFilters(TableQuery.GenerateFilterConditionForInt("IDEmployee", QueryComparisons.Equal, consolidatedEntity.IDEmployee),
+                        TableOperators.And, TableQuery.CombineFilters(TableQuery.GenerateFilterConditionForDate("DateTime", QueryComparisons.GreaterThanOrEqual, consolidatedEntity.DateTime.Date),
+                         TableOperators.And,
+                         TableQuery.GenerateFilterConditionForDate("DateTime", QueryComparisons.LessThan, consolidatedEntity.DateTime.Date.AddDays(1))));
+                    TableQuery<ConsolidatedEntity> queryEmployeeInConsolidateTable = new TableQuery<ConsolidatedEntity>().Where(findEmployeeInConsolidateTable);
+                    TableQuerySegment<ConsolidatedEntity> queryResult = await consolidatedTable.ExecuteQuerySegmentedAsync(queryEmployeeInConsolidateTable, null);
+                    if (queryResult.Results.Count == 0)
                     {
                         //If the employee does not exist, a new record is stored.
                         TableOperation addNewConsolidation = TableOperation.Insert(consolidatedEntity);
                         await consolidatedTable.ExecuteAsync(addNewConsolidation);
                         log.LogInformation($"New Consolidation stored in table of times for employee id: {consolidatedEntity.IDEmployee} at: {DateTime.Now}");
-                        contNew = contNew + 1;
+                        contNew++;
                     }
                     else
                     {
                         //If the employee already exists, update the number of hours worked.
-                        ConsolidatedEntity consolidatedEntityOriginal = (ConsolidatedEntity)findResultEmployeeConsolidate.Result;
+                        ConsolidatedEntity consolidatedEntityOriginal = queryResult.Results[0];
                         consolidatedEntityOriginal.MinutesWork = consolidatedEntityOriginal.MinutesWork + consolidatedEntity.MinutesWork;
                         TableOperation updateConsolidation = TableOperation.Replace(consolidatedEntityOriginal);
                         await consolidatedTable.ExecuteAsync(updateConsolidation);
                         log.LogInformation($"Consolidation stored in table of times for employee id: {consolidatedEntity.IDEmployee} at: {DateTime.Now}");
-                        contUpdate = contUpdate + 1;
+                        contUpdate++;
                     }
 
                     //update consolidate=true in entryTable type=0
-                    //string filterEntryNoConsolidated = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, ListEntryEntity[i - 1].RowKey.ToString());
-                    //TableQuery<EntryEntity> queryEntryNoConsolidated = new TableQuery<EntryEntity>().Where(filterEntryNoConsolidated);
-                    //TableQuerySegment<EntryEntity> registersNoConsolidated = await entryTable.ExecuteQuerySegmentedAsync(queryEntryNoConsolidated, null);
-
-                    TableOperation findConsolidatesInFalseType0 = TableOperation.Retrieve<EntryEntity>("TIME", ListEntryEntity[i-1].RowKey);
+                    TableOperation findConsolidatesInFalseType0 = TableOperation.Retrieve<EntryEntity>("TIME", ListEntryEntity[i - 1].RowKey);
                     TableResult findResultType0ForConsolidate = await entryTable.ExecuteAsync(findConsolidatesInFalseType0);
-                    //List<EntryEntity> registersNoConsolidated
                     EntryEntity entryUpdateType0 = (EntryEntity)findResultType0ForConsolidate.Result;
                     entryUpdateType0.Consolidate = true;
                     TableOperation updateEntryType0InContolidateTrue = TableOperation.Replace(entryUpdateType0);
@@ -102,13 +98,12 @@ namespace entryesteban.Functions.Functions
                     await entryTable.ExecuteAsync(updateEntryType1InContolidateTrue);
                 }
             }
-            string message = $"New consolidations: {contNew} stored in table successfully and the consolidations updates are: {contUpdate}";
+            string message = $"New consolidations: {contNew} stored in table successfully and {contUpdate} consolidations updates.";
             log.LogInformation(message);
             return new OkObjectResult(new Response
             {
                 IsSuccess = true,
                 Message = message,
-                Result = consolidatedEntity
             });
         }
 
@@ -121,9 +116,11 @@ namespace entryesteban.Functions.Functions
         {
             log.LogInformation($"Get consolidates by date: {date}, completed.");
 
-            string filter = TableQuery.GenerateFilterConditionForDate("DateTime", QueryComparisons.GreaterThanOrEqual, Convert.ToDateTime(date));
-            TableQuery<ConsolidatedEntity> quetyConsolidate = new TableQuery<ConsolidatedEntity>().Where(filter);
-            TableQuerySegment<ConsolidatedEntity> consolidateds = await consolidatedTable.ExecuteQuerySegmentedAsync(quetyConsolidate, null);
+            string query = TableQuery.CombineFilters(TableQuery.GenerateFilterConditionForDate("DateTime", QueryComparisons.GreaterThanOrEqual, Convert.ToDateTime(date).Date),
+                         TableOperators.And,
+                         TableQuery.GenerateFilterConditionForDate("DateTime", QueryComparisons.LessThan, Convert.ToDateTime(date).Date.AddDays(1)));
+            TableQuery<ConsolidatedEntity> queryConsolidatesForDate = new TableQuery<ConsolidatedEntity>().Where(query);
+            TableQuerySegment<ConsolidatedEntity> consolidateds = await consolidatedTable.ExecuteQuerySegmentedAsync(queryConsolidatesForDate, null);
             if (consolidateds == null)
             {
                 return new BadRequestObjectResult(new Response
